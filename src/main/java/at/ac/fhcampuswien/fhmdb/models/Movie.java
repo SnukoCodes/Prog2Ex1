@@ -3,6 +3,7 @@ package at.ac.fhcampuswien.fhmdb.models;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Movie {
     private String title;
@@ -12,7 +13,7 @@ public class Movie {
     public Movie(String title, String description, List<Genre> genres) {
         this.title = title;
         this.description = description;
-        this.genres = new ArrayList<>();
+        this.genres = new ArrayList<>(genres);
     }
 
     public String getTitle() {
@@ -23,7 +24,13 @@ public class Movie {
         return description;
     }
 
-    public static List<Movie> initializeMovies(){
+    public String getGenres() {
+        return genres.stream()
+                .map(Enum::name)
+                .collect(Collectors.joining(", "));
+    }
+
+    public static List<Movie> initializeMovies() {
         List<Movie> movies = new ArrayList<>();
         movies.add(new Movie("Life is Beautiful",
                 "When an open-minded Jewish librarian and his son become victims of the Holocaust, " +
@@ -45,6 +52,27 @@ public class Movie {
         movies.add(new Movie("The Godfather",
                 "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
                 Arrays.asList(Genre.DRAMA, Genre.CRIME)));
+
+        movies.add(new Movie("The Matrix",
+                "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+                Arrays.asList(Genre.ACTION, Genre.SCIENCE_FICTION)));
+
+        movies.add(new Movie("Forrest Gump",
+                "A man with a low IQ recounts his extraordinary life journey, unexpectedly influencing historic events along the way.",
+                Arrays.asList(Genre.DRAMA, Genre.ROMANCE)));
+
+        movies.add(new Movie("Gladiator",
+                "A betrayed Roman general seeks revenge against a corrupt emperor while fighting for justice and honor.",
+                Arrays.asList(Genre.ACTION, Genre.DRAMA, Genre.ADVENTURE)));
+
+        movies.add(new Movie("The Lion King",
+                "A young lion prince flees his kingdom after his father's death, only to learn about responsibility, courage, and reclaiming his birthright.",
+                Arrays.asList(Genre.ANIMATION, Genre.FAMILY, Genre.DRAMA)));
+
+        movies.add(new Movie("Pulp Fiction",
+                "Intertwined stories of crime and redemption bring together a series of eclectic characters in a gritty urban setting.",
+                Arrays.asList(Genre.CRIME, Genre.DRAMA)));
+
         return movies;
     }
 }

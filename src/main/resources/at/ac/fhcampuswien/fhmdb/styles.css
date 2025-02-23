@@ -19,6 +19,11 @@
     -fx-text-fill: #ffffff;
 }
 
+.text-white-cursive{
+    -fx-text-fill: #ffffff;
+    -fx-font-family: cursive;
+}
+
 .list-view .list-cell:even {
     -fx-background-color: black;
     -fx-text-fill: white;

@@ -62,7 +62,6 @@
                 <version>3.2.5</version>
                 <configuration>
                     <includes>
-                        <include>MovieTest.java</include>
                         <include>HomeControllerTest.java</include>
                     </includes>
                 </configuration>

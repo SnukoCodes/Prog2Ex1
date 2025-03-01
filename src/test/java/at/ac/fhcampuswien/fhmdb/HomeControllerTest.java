@@ -15,32 +15,32 @@ class HomeControllerTest {
 
     // Ascending order tests
     @Test
-    void testSortMoviesAscending_NullList() {
+    void testSortMovies_Ascending_NullList() {
         // Expect a NullPointerException when passing a null list.
         assertThrows(NullPointerException.class, () -> {
-            HomeController.sortMoviesAscending(null);
+            HomeController.sortMovies(null, Boolean.TRUE);
         });
     }
 
     @Test
-    void testSortMoviesAscending_EmptyList() {
+    void testSortMovies_Ascending_EmptyList() {
         List<Movie> emptyList = new ArrayList<>();
-        List<Movie> sorted = HomeController.sortMoviesAscending(emptyList);
+        List<Movie> sorted = HomeController.sortMovies(emptyList, Boolean.TRUE);
         assertNotNull(sorted, "Sorted list should not be null");
         assertTrue(sorted.isEmpty(), "Sorted list should be empty");
     }
 
     @Test
-    void testSortAscending_SingleElement() {
+    void testSortMovies_Ascending_SingleElement() {
         Movie movie = new Movie("Single", "A single movie", List.of(Genre.DRAMA));
         List<Movie> list = new ArrayList<>(Collections.singletonList(movie));
-        List<Movie> sorted = HomeController.sortMoviesAscending(list);
+        List<Movie> sorted = HomeController.sortMovies(list, Boolean.TRUE);
         assertEquals(1, sorted.size(), "Sorted list should contain one element");
         assertEquals(movie, sorted.get(0), "The single movie should remain unchanged");
     }
 
     @Test
-    void testSortAscending_Duplicates() {
+    void testSortMovies_Ascending_Duplicates() {
         // Create two movies with identical titles and one with a different title.
         Movie movie1 = new Movie("A Movie", "First instance", List.of(Genre.DRAMA));
         Movie movie2 = new Movie("A Movie", "Second instance", List.of(Genre.COMEDY));
@@ -52,7 +52,7 @@ class HomeControllerTest {
         list.add(movie1);
         list.add(movie2);
 
-        List<Movie> sorted = HomeController.sortMoviesAscending(list);
+        List<Movie> sorted = HomeController.sortMovies(list, Boolean.TRUE);
 
         // Expect both "A Movie" entries to appear before "B Movie"
         assertEquals("A Movie", sorted.get(0).getTitle());
@@ -61,11 +61,11 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMoviesAscending_Sort() {
+    void testSortMovies_Ascending_Sort() {
         List<Movie> movies = Movie.initializeMovies();
 
         // Call the function that sorts movies in ascending order (by title)
-        List<Movie> sortedMovies = HomeController.sortMoviesAscending(movies);
+        List<Movie> sortedMovies = HomeController.sortMovies(movies, Boolean.TRUE);
 
         // Check that the list is sorted in ascending order by comparing adjacent titles.
         for (int i = 0; i < sortedMovies.size() - 1; i++) {
@@ -79,32 +79,32 @@ class HomeControllerTest {
     // Descending order tests
 
     @Test
-    void testSortMoviesDescending_NullList() {
+    void testSortMovies_Descending_NullList() {
         // Expect a NullPointerException when passing a null list.
         assertThrows(NullPointerException.class, () -> {
-            HomeController.sortMoviesDescending(null);
+            HomeController.sortMovies(null, Boolean.FALSE);
         });
     }
 
     @Test
-    void testSortMoviesDescending_EmptyList() {
+    void testSortMovies_Descending_EmptyList() {
         List<Movie> emptyList = new ArrayList<>();
-        List<Movie> sorted = HomeController.sortMoviesDescending(emptyList);
+        List<Movie> sorted = HomeController.sortMovies(emptyList, Boolean.FALSE);
         assertNotNull(sorted, "Sorted list should not be null");
         assertTrue(sorted.isEmpty(), "Sorted list should be empty");
     }
 
     @Test
-    void testSortMoviesDescending_SingleElement() {
+    void testSortMovies_Descending_SingleElementDescending() {
         Movie movie = new Movie("Single", "A single movie", List.of(Genre.DRAMA));
         List<Movie> list = new ArrayList<>(Collections.singletonList(movie));
-        List<Movie> sorted = HomeController.sortMoviesDescending(list);
+        List<Movie> sorted = HomeController.sortMovies(list, Boolean.FALSE);
         assertEquals(1, sorted.size(), "Sorted list should contain one element");
         assertEquals(movie, sorted.get(0), "The single movie should remain unchanged");
     }
 
     @Test
-    void testSortMoviesDescending_Duplicates() {
+    void testSortMovies_Descending_Duplicates() {
         // Create two movies with identical titles and one with a different title.
         Movie movie1 = new Movie("A Movie", "First instance", List.of(Genre.DRAMA));
         Movie movie2 = new Movie("A Movie", "Second instance", List.of(Genre.COMEDY));
@@ -116,7 +116,7 @@ class HomeControllerTest {
         list.add(movie3);
         list.add(movie2);
 
-        List<Movie> sorted = HomeController.sortMoviesDescending(list);
+        List<Movie> sorted = HomeController.sortMovies(list, Boolean.FALSE);
 
         // In descending order, "B Movie" should appear first followed by both "A Movie" entries.
         assertEquals("B Movie", sorted.get(0).getTitle());
@@ -125,11 +125,11 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMoviesDescending_Sort() {
+    void testSortMovies_Descending_Sort() {
         List<Movie> movies = Movie.initializeMovies();
 
         // Call the function that sorts movies in ascending order (by title)
-        List<Movie> sortedMovies = HomeController.sortMoviesDescending(movies);
+        List<Movie> sortedMovies = HomeController.sortMovies(movies, Boolean.FALSE);
 
         // Check that the list is sorted in ascending order by comparing adjacent titles.
         for (int i = 0; i < sortedMovies.size() - 1; i++) {

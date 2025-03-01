@@ -36,13 +36,13 @@ public class HomeController implements Initializable {
 
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
 
-    public static List<Movie> sortMoviesAscending(List<Movie> movies) {
-        movies.sort(Comparator.comparing(Movie::getTitle));
-        return movies;
-    }
-
-    public static List<Movie> sortMoviesDescending(List<Movie> movies) {
-        movies.sort(Comparator.comparing(Movie::getTitle).reversed());
+    public static List<Movie> sortMovies(List<Movie> movies, Boolean ascending) {
+        if(ascending) {
+            movies.sort(Comparator.comparing(Movie::getTitle));
+        }
+        else {
+            movies.sort(Comparator.comparing(Movie::getTitle).reversed());
+        }
         return movies;
     }
 
@@ -64,11 +64,11 @@ public class HomeController implements Initializable {
         sortBtn.setOnAction(actionEvent -> {
             if (sortBtn.getText().equals("Sort (asc)")) {
                 // TODO sort observableMovies ascending
-                sortMoviesAscending(observableMovies);
+                sortMovies(observableMovies, Boolean.TRUE);
                 sortBtn.setText("Sort (desc)");
             } else {
                 // TODO sort observableMovies descending
-                sortMoviesDescending(observableMovies);
+                sortMovies(observableMovies, Boolean.FALSE);
                 sortBtn.setText("Sort (asc)");
             }
         });

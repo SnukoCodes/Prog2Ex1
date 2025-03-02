@@ -5,7 +5,6 @@ import at.ac.fhcampuswien.fhmdb.models.Movie;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -139,5 +138,22 @@ class HomeControllerTest {
                     + currentTitle + " should come after " + nextTitle);
         }
 
+    }
+
+    @Test
+    void filter_Movies() {
+        List<String> genres = new ArrayList<String>();
+        genres.add(Genre.ANIMATION.toString());
+
+        List<String> results = new ArrayList<>();
+
+        List<Movie> movies = HomeController.filterMovies(genres, "");
+
+        for (Movie mov : movies.stream().toList()){
+            results.add(mov.getTitle());
+        }
+
+        assertTrue(results.contains("Toy Story"));
+        assertTrue(results.contains("The Lion King"));
     }
 }

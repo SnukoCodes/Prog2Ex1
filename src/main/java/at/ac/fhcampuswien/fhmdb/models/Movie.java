@@ -30,6 +30,10 @@ public class Movie {
                 .collect(Collectors.joining(", "));
     }
 
+    public List<String> getGenresAsList(){
+        return genres.stream().map(Enum::name).toList();
+    }
+
     public static List<Movie> initializeMovies() {
         List<Movie> movies = new ArrayList<>();
         movies.add(new Movie("Life is Beautiful",

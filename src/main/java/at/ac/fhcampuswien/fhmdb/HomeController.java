@@ -16,6 +16,7 @@ import org.controlsfx.control.CheckComboBox;
 
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class HomeController implements Initializable {
@@ -38,6 +39,8 @@ public class HomeController implements Initializable {
 
     private final ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
     private final ObservableList<String> selectedGenres = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
+    @FXML
+    public JFXButton resetBtn;
 
     public static List<Movie> sortMovies(List<Movie> movies, Boolean ascending) {
         if(ascending) {
@@ -57,51 +60,68 @@ public class HomeController implements Initializable {
         movieListView.setItems(observableMovies);   // set data of observable list to list view
         movieListView.setCellFactory(listView -> new MovieCell()); // use custom cell factory to display data
 
-        // TODO add genre filter items with genreComboBox.getItems().addAll(...)
-
-        // TODO add event handlers to buttons and call the regarding methods
-        // either set event handlers in the fxml file (onAction) or add them here
+        resetBtn.setOnAction(actionEvent -> {
+            observableMovies.setAll(allMovies);         // add dummy data to observable list
+            // initialize UI stuff
+            movieListView.setItems(observableMovies);
+            movieListView.setCellFactory(listView -> new MovieCell());
+        });
 
         // The following XXX lines of Code have been taken from the Internet | https://stackoverflow.com/questions/13783295/getting-all-names-in-an-enum-as-a-string, last visited 02.03.2025
         String[] genres = Stream.of(Genre.values()).map(Genre::name).toArray(String[]::new);
         genreComboBox.getItems().addAll(genres);
         genreComboBox.setTitle("Filter by Genre");
 
-        genreComboBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<String>) c ->{
-            selectedGenres.clear();
-            selectedGenres.addAll(genreComboBox.getCheckModel().getCheckedItems());
-            observableMovies.setAll(filterMovies(selectedGenres,searchField.getText()));
+        // either set event handlers in the fxml file (onAction) or add them here
+            searchBtn.setOnAction(actionEvent -> {
+                // Get the list of selected genres as strings from the genreComboBox.
+                List<String> selectedGenres = genreComboBox.getCheckModel().getCheckedItems();
+                String searchQuery = searchField.getText().toLowerCase();
+
+                // Set the filtered list into the ListView.
+                ObservableList<Movie> filteredMovies = filterMovies(selectedGenres, searchQuery);
+                movieListView.setItems(filteredMovies);
+                movieListView.setCellFactory(listView -> new MovieCell());
         });
+
         // Sort button example:
         sortBtn.setOnAction(actionEvent -> {
             if (sortBtn.getText().equals("Sort (asc)")) {
-                // TODO sort observableMovies ascending
                 sortMovies(observableMovies, Boolean.TRUE);
                 sortBtn.setText("Sort (desc)");
             } else {
-                // TODO sort observableMovies descending
                 sortMovies(observableMovies, Boolean.FALSE);
                 sortBtn.setText("Sort (asc)");
             }
         });
     }
 
-    public static List<Movie> filterMovies(List<String> selectedGenres, String searchQuery) {
-        Set<String> seenTitles = new HashSet<>();
-        List<Movie> filteredMovies = new ArrayList<>();
+    public static ObservableList<Movie> filterMovies(List<String> selectedGenres, String searchQuery) {
+//           // Create a new ObservableList for the filtered movies.
+        ObservableList<Movie> filteredMovies = FXCollections.observableArrayList();
 
         for (Movie movie : allMovies) {
-            boolean matchesGenre = selectedGenres == null || selectedGenres.isEmpty() || selectedGenres.get(0).isEmpty();
+            // Check if the movie's title contains the search text (case-insensitive).
+            boolean titleMatches = movie.getTitle().toLowerCase().contains(
+                    searchQuery);
 
-            for (int i = 0; i < movie.getGenresAsList().size() && (!matchesGenre); i++) {
-                matchesGenre = selectedGenres.contains(movie.getGenresAsList().get(i));
+            // Split the movie's genres string into individual genres.
+            List<String> movieGenres = Arrays.stream(movie.getGenres().split(",\\s*"))
+                    .map(String::toLowerCase)
+                    .toList();
+
+            // If no genres are selected, we ignore the genre filter.
+            boolean genreMatches;
+            if (selectedGenres.isEmpty()) {
+                genreMatches = true;
+            } else {
+                // Otherwise, require that the movie contains all selected genres.
+                genreMatches = selectedGenres.stream()
+                        .map(String::toLowerCase)
+                        .allMatch(movieGenres::contains);
             }
 
-            boolean matchesQuery = searchQuery == null || searchQuery.isEmpty() || movie.getTitle().toLowerCase().contains(searchQuery.toLowerCase())
-                    || (movie.getDescription() != null && movie.getDescription().toLowerCase().contains(searchQuery.toLowerCase()));
-
-
-            if (matchesGenre && matchesQuery && seenTitles.add(movie.getTitle().toLowerCase())) {
+            if (titleMatches && genreMatches) {
                 filteredMovies.add(movie);
             }
         }

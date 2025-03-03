@@ -14,7 +14,7 @@ class HomeControllerTest {
 
     // Ascending order tests
     @Test
-    void testSortMovies_Ascending_NullList() {
+    void testSortMoviesAscendingNullList() {
         // Expect a NullPointerException when passing a null list.
         assertThrows(NullPointerException.class, () -> {
             HomeController.sortMovies(null, Boolean.TRUE);
@@ -22,24 +22,28 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_Ascending_EmptyList() {
+    void testSortMoviesAscendingEmptyList() {
         List<Movie> emptyList = new ArrayList<>();
+
         List<Movie> sorted = HomeController.sortMovies(emptyList, Boolean.TRUE);
+
         assertNotNull(sorted, "Sorted list should not be null");
         assertTrue(sorted.isEmpty(), "Sorted list should be empty");
     }
 
     @Test
-    void testSortMovies_Ascending_SingleElement() {
+    void testSortMoviesAscendingSingleElement() {
         Movie movie = new Movie("Single", "A single movie", List.of(Genre.DRAMA));
         List<Movie> list = new ArrayList<>(Collections.singletonList(movie));
+
         List<Movie> sorted = HomeController.sortMovies(list, Boolean.TRUE);
+
         assertEquals(1, sorted.size(), "Sorted list should contain one element");
         assertEquals(movie, sorted.get(0), "The single movie should remain unchanged");
     }
 
     @Test
-    void testSortMovies_Ascending_Duplicates() {
+    void testSortMoviesAscendingDuplicates() {
         // Create two movies with identical titles and one with a different title.
         Movie movie1 = new Movie("A Movie", "First instance", List.of(Genre.DRAMA));
         Movie movie2 = new Movie("A Movie", "Second instance", List.of(Genre.COMEDY));
@@ -60,7 +64,7 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_Ascending_Sort() {
+    void testSortMoviesAscendingSort() {
         List<Movie> movies = Movie.initializeMovies();
 
         // Call the function that sorts movies in ascending order (by title)
@@ -78,7 +82,7 @@ class HomeControllerTest {
     // Descending order tests
 
     @Test
-    void testSortMovies_Descending_NullList() {
+    void testSortMoviesDescendingNullList() {
         // Expect a NullPointerException when passing a null list.
         assertThrows(NullPointerException.class, () -> {
             HomeController.sortMovies(null, Boolean.FALSE);
@@ -86,24 +90,30 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_Descending_EmptyList() {
+    void testSortMoviesDescendingEmptyList() {
         List<Movie> emptyList = new ArrayList<>();
+
         List<Movie> sorted = HomeController.sortMovies(emptyList, Boolean.FALSE);
+
         assertNotNull(sorted, "Sorted list should not be null");
         assertTrue(sorted.isEmpty(), "Sorted list should be empty");
     }
 
     @Test
-    void testSortMovies_Descending_SingleElementDescending() {
+    void testSortMoviesDescendingSingleElementDescending() {
+
         Movie movie = new Movie("Single", "A single movie", List.of(Genre.DRAMA));
         List<Movie> list = new ArrayList<>(Collections.singletonList(movie));
+
         List<Movie> sorted = HomeController.sortMovies(list, Boolean.FALSE);
+
         assertEquals(1, sorted.size(), "Sorted list should contain one element");
         assertEquals(movie, sorted.get(0), "The single movie should remain unchanged");
     }
 
     @Test
-    void testSortMovies_Descending_Duplicates() {
+    void testSortMoviesDescendingDuplicates() {
+        //Arrange
         // Create two movies with identical titles and one with a different title.
         Movie movie1 = new Movie("A Movie", "First instance", List.of(Genre.DRAMA));
         Movie movie2 = new Movie("A Movie", "Second instance", List.of(Genre.COMEDY));
@@ -115,8 +125,10 @@ class HomeControllerTest {
         list.add(movie3);
         list.add(movie2);
 
+        //Act
         List<Movie> sorted = HomeController.sortMovies(list, Boolean.FALSE);
 
+        //Assert
         // In descending order, "B Movie" should appear first followed by both "A Movie" entries.
         assertEquals("B Movie", sorted.get(0).getTitle());
         assertEquals("A Movie", sorted.get(1).getTitle());
@@ -124,13 +136,14 @@ class HomeControllerTest {
     }
 
     @Test
-    void testSortMovies_Descending_Sort() {
+    void testSortMoviesDescendingSort() {
+        //Arrange
         List<Movie> movies = Movie.initializeMovies();
 
-        // Call the function that sorts movies in ascending order (by title)
+        //Act
         List<Movie> sortedMovies = HomeController.sortMovies(movies, Boolean.FALSE);
 
-        // Check that the list is sorted in ascending order by comparing adjacent titles.
+        //Assert
         for (int i = 0; i < sortedMovies.size() - 1; i++) {
             String currentTitle = sortedMovies.get(i).getTitle();
             String nextTitle = sortedMovies.get(i + 1).getTitle();
@@ -141,19 +154,53 @@ class HomeControllerTest {
     }
 
     @Test
-    void filter_Movies() {
+    void testFilterMoviesOneGenre() {
+        //Arrange
         List<String> genres = new ArrayList<String>();
         genres.add(Genre.ANIMATION.toString());
 
-        List<String> results = new ArrayList<>();
+        //Act
+        List<Movie> results = HomeController.filterMovies(genres, "");
 
-        List<Movie> movies = HomeController.filterMovies(genres, "");
-
-        for (Movie mov : movies.stream().toList()){
-            results.add(mov.getTitle());
+        //Assert
+        for (Movie mov : results) {
+            assertTrue(mov.getGenres().contains(Genre.ANIMATION.toString()));
         }
+    }
 
-        assertTrue(results.contains("Toy Story"));
-        assertTrue(results.contains("The Lion King"));
+    @Test
+    void testFilterMoviesTwoGenres() {
+        //Arrange
+        List<String> genres = new ArrayList<String>();
+        genres.add(Genre.ACTION.toString());
+        genres.add(Genre.DRAMA.toString());
+
+        //Act
+        List<Movie> results = HomeController.filterMovies(genres, "");
+
+        //Assert
+        for (Movie mov : results) {
+            assertTrue(mov.getGenres().contains(Genre.ACTION.toString()));
+            assertTrue(mov.getGenres().contains(Genre.DRAMA.toString()));
+        }
+    }
+
+    @Test
+    void testFilterMoviesOneGenreWithSearch() {
+        // Arrange
+        List<String> genres = new ArrayList<>();
+        genres.add(Genre.ACTION.toString());
+        String searchString = "The";
+
+        // Act
+        List<Movie> results = HomeController.filterMovies(genres, searchString);
+
+        // Assert
+        for (Movie mov : results) {
+            assertTrue(mov.getGenres().contains(Genre.ACTION.toString()),
+                    "Movie " + mov.getTitle() + " does not contain ACTION");
+            assertTrue(mov.getTitle().toLowerCase().contains(searchString.toLowerCase()),
+                    "Movie " + mov.getTitle() + " does not contain search string: " + searchString);
+        }
     }
 }
